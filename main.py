@@ -1,3 +1,4 @@
+import random
 import tkinter as tk
 
 from gamelib import Sprite, GameApp, Text
@@ -12,6 +13,37 @@ UPDATE_DELAY = 33
 
 PACMAN_SPEED = 5
 
+
+class NormalPacmanState:
+    def __init__(self, pacman):
+        self.pacman = pacman
+
+    def random_upgrade(self):
+        if random.random() < 0.1:
+            self.pacman.state = SuperPacmanState(self.pacman)
+
+    def move_pacman(self):
+        self.pacman.x += PACMAN_SPEED * DIR_OFFSET[self.pacman.direction][0]
+        self.pacman.y += PACMAN_SPEED * DIR_OFFSET[self.pacman.direction][1]
+
+
+class SuperPacmanState:
+    def __init__(self, pacman):
+        self.pacman = pacman
+        self.counter = 0
+
+    def random_upgrade(self):
+        pass
+
+    def move_pacman(self):
+        if self.counter <= 50:
+            self.pacman.x += 2 * PACMAN_SPEED * DIR_OFFSET[self.pacman.direction][0]
+            self.pacman.y += 2 * PACMAN_SPEED * DIR_OFFSET[self.pacman.direction][1]
+            self.counter += 1
+        else:
+            self.pacman.state = NormalPacmanState(self.pacman)
+
+
 class Pacman(Sprite):
     def __init__(self, app, maze, r, c):
         self.r = r
@@ -20,8 +52,9 @@ class Pacman(Sprite):
 
         self.direction = DIR_STILL
         self.next_direction = DIR_STILL
+        self.state = NormalPacmanState(self)
 
-        x, y = maze.piece_center(r,c)
+        x, y = maze.piece_center(r, c)
         super().__init__(app, 'images/pacman.png', x, y)
 
     def update(self):
@@ -30,14 +63,14 @@ class Pacman(Sprite):
 
             if self.maze.has_dot_at(r, c):
                 self.maze.eat_dot_at(r, c)
-            
+                self.state.random_upgrade()
+
             if self.maze.is_movable_direction(r, c, self.next_direction):
                 self.direction = self.next_direction
             else:
                 self.direction = DIR_STILL
 
-        self.x += PACMAN_SPEED * DIR_OFFSET[self.direction][0]
-        self.y += PACMAN_SPEED * DIR_OFFSET[self.direction][1]
+        self.state.move_pacman()
 
     def set_next_direction(self, direction):
         self.next_direction = direction
@@ -78,6 +111,7 @@ class PacmanGame(GameApp):
     def get_pacman_next_direction_function(self, pacman, next_direction):
         def inner():
             pacman.set_next_direction(next_direction)
+
         return inner
 
     def on_key_pressed(self, event):
@@ -90,7 +124,7 @@ class PacmanGame(GameApp):
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Monkey Banana Game")
- 
+
     # do not allow window resizing
     root.resizable(False, False)
     app = PacmanGame(root, CANVAS_WIDTH, CANVAS_HEIGHT, UPDATE_DELAY)
