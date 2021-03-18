@@ -54,8 +54,16 @@ class Pacman(Sprite):
         self.next_direction = DIR_STILL
         self.state = NormalPacmanState(self)
 
+<<<<<<< HEAD
         x, y = maze.piece_center(r, c)
+=======
+        self.dot_eaten_observers = []
+
+        x, y = maze.piece_center(r,c)
+>>>>>>> scoring
         super().__init__(app, 'images/pacman.png', x, y)
+
+        
 
     def update(self):
         if self.maze.is_at_center(self.x, self.y):
@@ -63,8 +71,14 @@ class Pacman(Sprite):
 
             if self.maze.has_dot_at(r, c):
                 self.maze.eat_dot_at(r, c)
+<<<<<<< HEAD
                 self.state.random_upgrade()
 
+=======
+                for observer in self.dot_eaten_observers:
+                    observer()
+            
+>>>>>>> scoring
             if self.maze.is_movable_direction(r, c, self.next_direction):
                 self.direction = self.next_direction
             else:
@@ -102,6 +116,12 @@ class PacmanGame(GameApp):
             'L': self.get_pacman_next_direction_function(self.pacman2, DIR_RIGHT),
         }
 
+        self.pacman1_score = 0
+        self.pacman2_score = 0
+
+        self.pacman1.dot_eaten_observers.append(self.dot_eaten_by_pacman1)
+        self.pacman2.dot_eaten_observers.append(self.dot_eaten_by_pacman2)
+
     def pre_update(self):
         pass
 
@@ -115,11 +135,44 @@ class PacmanGame(GameApp):
         return inner
 
     def on_key_pressed(self, event):
+<<<<<<< HEAD
         key = event.char.upper()
         command = self.command_map.get(key)
         if command:
             command()
 
+=======
+        if event.char.upper() == 'A':
+            self.pacman1.set_next_direction(DIR_LEFT)
+        elif event.char.upper() == 'W':
+            self.pacman1.set_next_direction(DIR_UP)
+        elif event.char.upper() == 'S':
+            self.pacman1.set_next_direction(DIR_DOWN)
+        elif event.char.upper() == 'D':
+            self.pacman1.set_next_direction(DIR_RIGHT)
+
+        if event.char.upper() == 'J':
+            self.pacman2.set_next_direction(DIR_LEFT)
+        elif event.char.upper() == 'I':
+            self.pacman2.set_next_direction(DIR_UP)
+        elif event.char.upper() == 'K':
+            self.pacman2.set_next_direction(DIR_DOWN)
+        elif event.char.upper() == 'L':
+            self.pacman2.set_next_direction(DIR_RIGHT)
+    
+    def update_scores(self):
+        self.pacman1_score_text.set_text(f'P1: {self.pacman1_score}')
+        self.pacman2_score_text.set_text(f'P2: {self.pacman2_score}')
+    
+    def dot_eaten_by_pacman1(self):
+        self.pacman1_score += 1
+        self.update_scores()
+
+    def dot_eaten_by_pacman2(self):
+        self.pacman2_score += 1
+        self.update_scores()
+    
+>>>>>>> scoring
 
 if __name__ == "__main__":
     root = tk.Tk()
