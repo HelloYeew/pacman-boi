@@ -54,13 +54,9 @@ class Pacman(Sprite):
         self.next_direction = DIR_STILL
         self.state = NormalPacmanState(self)
 
-<<<<<<< HEAD
-        x, y = maze.piece_center(r, c)
-=======
         self.dot_eaten_observers = []
 
         x, y = maze.piece_center(r,c)
->>>>>>> scoring
         super().__init__(app, 'images/pacman.png', x, y)
 
         
@@ -71,14 +67,9 @@ class Pacman(Sprite):
 
             if self.maze.has_dot_at(r, c):
                 self.maze.eat_dot_at(r, c)
-<<<<<<< HEAD
-                self.state.random_upgrade()
-
-=======
                 for observer in self.dot_eaten_observers:
                     observer()
             
->>>>>>> scoring
             if self.maze.is_movable_direction(r, c, self.next_direction):
                 self.direction = self.next_direction
             else:
@@ -135,13 +126,6 @@ class PacmanGame(GameApp):
         return inner
 
     def on_key_pressed(self, event):
-<<<<<<< HEAD
-        key = event.char.upper()
-        command = self.command_map.get(key)
-        if command:
-            command()
-
-=======
         if event.char.upper() == 'A':
             self.pacman1.set_next_direction(DIR_LEFT)
         elif event.char.upper() == 'W':
@@ -172,7 +156,6 @@ class PacmanGame(GameApp):
         self.pacman2_score += 1
         self.update_scores()
     
->>>>>>> scoring
 
 if __name__ == "__main__":
     root = tk.Tk()
