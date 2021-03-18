@@ -67,6 +67,7 @@ class Pacman(Sprite):
 
             if self.maze.has_dot_at(r, c):
                 self.maze.eat_dot_at(r, c)
+                self.state.random_upgrade()
                 for observer in self.dot_eaten_observers:
                     observer()
             
@@ -126,24 +127,11 @@ class PacmanGame(GameApp):
         return inner
 
     def on_key_pressed(self, event):
-        if event.char.upper() == 'A':
-            self.pacman1.set_next_direction(DIR_LEFT)
-        elif event.char.upper() == 'W':
-            self.pacman1.set_next_direction(DIR_UP)
-        elif event.char.upper() == 'S':
-            self.pacman1.set_next_direction(DIR_DOWN)
-        elif event.char.upper() == 'D':
-            self.pacman1.set_next_direction(DIR_RIGHT)
+        key = event.char.upper()
+        command = self.command_map.get(key)
+        if command:
+            command()
 
-        if event.char.upper() == 'J':
-            self.pacman2.set_next_direction(DIR_LEFT)
-        elif event.char.upper() == 'I':
-            self.pacman2.set_next_direction(DIR_UP)
-        elif event.char.upper() == 'K':
-            self.pacman2.set_next_direction(DIR_DOWN)
-        elif event.char.upper() == 'L':
-            self.pacman2.set_next_direction(DIR_RIGHT)
-    
     def update_scores(self):
         self.pacman1_score_text.set_text(f'P1: {self.pacman1_score}')
         self.pacman2_score_text.set_text(f'P2: {self.pacman2_score}')
